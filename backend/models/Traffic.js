@@ -49,7 +49,24 @@ const trafficSchema = new mongoose.Schema(
       required: true,
     },
 
+    // NEW
+    packetRate: {
+      type: Number,
+      default: 0,
+    },
+
+    // NEW
+    bytesPerSecond: {
+      type: Number,
+      default: 0,
+    },
+
     anomalyScore: {
+      type: Number,
+      default: 0,
+    },
+
+    confidence: {
       type: Number,
       default: 0,
     },
@@ -70,6 +87,16 @@ const trafficSchema = new mongoose.Schema(
     },
 
     city: {
+      type: String,
+      default: "Unknown",
+    },
+
+    device: {
+      type: String,
+      default: "Unknown",
+    },
+
+    os: {
       type: String,
       default: "Unknown",
     },

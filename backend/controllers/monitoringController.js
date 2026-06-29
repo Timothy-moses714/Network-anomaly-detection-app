@@ -1,12 +1,21 @@
 import Traffic from "../models/Traffic.js";
-import { getIO } from "../config/socket.js";
 import Alert from "../models/Alert.js";
+import { getIO } from "../config/socket.js";
+import { predictTraffic } from "../services/aiService.js";
 
 // Create traffic record
 export const createTraffic = async (req, res) => {
   try {
+    // Predict using ML service
+    const prediction = await predictTraffic(req.body);
+
+    req.body.status = prediction.prediction;
+    req.body.anomalyScore = prediction.score;
+
+    // Save traffic
     const traffic = await Traffic.create(req.body);
 
+    // Create alert if anomaly detected
     if (
       traffic.status === "Anomaly" ||
       traffic.status === "Suspicious"
@@ -44,101 +53,64 @@ export const createTraffic = async (req, res) => {
       io.emit("newAlert", traffic);
     }
 
-    return res.status(201).json(traffic);
+    return res.status(201).json({
+      success: true,
+      data: traffic,
+    });
 
   } catch (error) {
     return res.status(500).json({
+      success: false,
       message: error.message,
     });
   }
 };
 
 // Get all traffic
-export const getTraffic =
-  async (req, res) => {
-    try {
-      const page =
-        Number(req.query.page) || 1;
+export const getTraffic = async (req, res) => {
+  try {
+    const traffic = await Traffic.find().sort({
+      createdAt: -1,
+    });
 
-      const limit =
-        Number(req.query.limit) || 20;
+    return res.json({
+      success: true,
+      count: traffic.length,
+      data: traffic,
+    });
 
-      const skip =
-        (page - 1) * limit;
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
-      const filter = {};
+// Get single traffic
+export const getTrafficById = async (req, res) => {
+  try {
+    const traffic = await Traffic.findById(req.params.id);
 
-      if (req.query.protocol) {
-        filter.protocol =
-          req.query.protocol;
-      }
-
-      if (req.query.status) {
-        filter.status =
-          req.query.status;
-      }
-
-      if (req.query.sourceIP) {
-        filter.sourceIP = {
-          $regex: req.query.sourceIP,
-          $options: "i",
-        };
-      }
-
-      const traffic =
-        await Traffic.find(filter)
-          .sort({
-            createdAt: -1,
-          })
-          .skip(skip)
-          .limit(limit);
-
-      const total =
-        await Traffic.countDocuments(
-          filter
-        );
-
-      res.json({
-        page,
-        total,
-        totalPages:
-          Math.ceil(
-            total / limit
-          ),
-        data: traffic,
-      });
-    } catch (error) {
-      res.status(500).json({
-        message: error.message,
+    if (!traffic) {
+      return res.status(404).json({
+        success: false,
+        message: "Traffic not found",
       });
     }
-  };
 
-// Get single record
-export const getTrafficById =
-  async (req, res) => {
-    try {
-      const traffic =
-        await Traffic.findById(
-          req.params.id
-        );
+    return res.json({
+      success: true,
+      data: traffic,
+    });
 
-      if (!traffic) {
-        return res
-          .status(404)
-          .json({
-            message:
-              "Traffic not found",
-          });
-      }
-
-      res.json(traffic);
-    } catch (error) {
-      res.status(500).json({
-        message: error.message,
-      });
-    }
-  };
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: error.message,
+    });
+  }
+};
 
 // Update traffic
 export const updateTraffic = async (req, res) => {
@@ -153,18 +125,21 @@ export const updateTraffic = async (req, res) => {
 
     if (!traffic) {
       return res.status(404).json({
+        success: false,
         message: "Traffic not found",
       });
     }
 
-    const io = getIO();
+    getIO().emit("trafficUpdated", traffic);
 
-    io.emit("trafficUpdated", traffic);
-
-    return res.json(traffic);
+    return res.json({
+      success: true,
+      data: traffic,
+    });
 
   } catch (error) {
     return res.status(500).json({
+      success: false,
       message: error.message,
     });
   }
@@ -179,20 +154,21 @@ export const deleteTraffic = async (req, res) => {
 
     if (!traffic) {
       return res.status(404).json({
+        success: false,
         message: "Traffic not found",
       });
     }
 
-    const io = getIO();
-
-    io.emit("trafficDeleted", req.params.id);
+    getIO().emit("trafficDeleted", req.params.id);
 
     return res.json({
+      success: true,
       message: "Traffic deleted successfully",
     });
 
   } catch (error) {
     return res.status(500).json({
+      success: false,
       message: error.message,
     });
   }
