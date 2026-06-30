@@ -74,7 +74,7 @@ const Sidebar = () => {
     <aside className="sidebar">
       <div>
         <div className="logo">
-          NetGuard AI
+          NetGuard 
         </div>
 
         <nav className="sidebar-nav">
