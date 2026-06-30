@@ -27,15 +27,15 @@ const Users = () => {
     useState([
       {
         id: 1,
-        name: "John Doe",
-        email: "john@example.com",
+        name: "Solomon Francis",
+        email: "s0l0mon@example.com",
         role: "Admin",
       },
 
       {
         id: 2,
-        name: "Sarah Smith",
-        email: "sarah@example.com",
+        name: "Timothy Notani",
+        email: "notani@example.com",
         role: "Analyst",
       },
 
