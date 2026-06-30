@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 
 const Register = () => {
@@ -13,8 +14,17 @@ const Register = () => {
     confirmPassword: "",
   });
 
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const [error, setError] = useState("");
+
+  const [showPassword, setShowPassword] =
+    useState(false);
+
+  const [
+    showConfirmPassword,
+    setShowConfirmPassword,
+  ] = useState(false);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -67,6 +77,7 @@ const Register = () => {
       });
 
       navigate("/dashboard");
+
     } catch (err) {
       setError(
         err.response?.data?.message ||
@@ -83,8 +94,9 @@ const Register = () => {
 
         <div className="auth-header">
           <h1>Create Account</h1>
+
           <p>
-            Register to access NetGuard 
+            Register to access NetGuard
           </p>
         </div>
 
@@ -102,9 +114,11 @@ const Register = () => {
             <input
               type="text"
               name="name"
-              placeholder="Mc Apako"
+              placeholder="John Doe"
               value={formData.name}
               onChange={handleChange}
+              disabled={loading}
+              required
             />
           </div>
 
@@ -117,19 +131,45 @@ const Register = () => {
               placeholder="example@gmail.com"
               value={formData.email}
               onChange={handleChange}
+              disabled={loading}
+              required
             />
           </div>
 
           <div className="form-group">
             <label>Password</label>
 
-            <input
-              type="password"
-              name="password"
-              placeholder="********"
-              value={formData.password}
-              onChange={handleChange}
-            />
+            <div className="password-input">
+              <input
+                type={
+                  showPassword
+                    ? "text"
+                    : "password"
+                }
+                name="password"
+                placeholder="********"
+                value={formData.password}
+                onChange={handleChange}
+                disabled={loading}
+                required
+              />
+
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() =>
+                  setShowPassword(
+                    !showPassword
+                  )
+                }
+              >
+                {showPassword ? (
+                  <FaEyeSlash />
+                ) : (
+                  <FaEye />
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="form-group">
@@ -137,15 +177,39 @@ const Register = () => {
               Confirm Password
             </label>
 
-            <input
-              type="password"
-              name="confirmPassword"
-              placeholder="********"
-              value={
-                formData.confirmPassword
-              }
-              onChange={handleChange}
-            />
+            <div className="password-input">
+              <input
+                type={
+                  showConfirmPassword
+                    ? "text"
+                    : "password"
+                }
+                name="confirmPassword"
+                placeholder="********"
+                value={
+                  formData.confirmPassword
+                }
+                onChange={handleChange}
+                disabled={loading}
+                required
+              />
+
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() =>
+                  setShowConfirmPassword(
+                    !showConfirmPassword
+                  )
+                }
+              >
+                {showConfirmPassword ? (
+                  <FaEyeSlash />
+                ) : (
+                  <FaEye />
+                )}
+              </button>
+            </div>
           </div>
 
           <button

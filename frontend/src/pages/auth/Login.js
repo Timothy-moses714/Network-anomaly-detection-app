@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { useAuth } from "../../context/AuthContext";
 
 const Login = () => {
@@ -13,14 +14,18 @@ const Login = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleChange = (e) => {
     const { name, value, checked, type } = e.target;
 
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : value,
-    });
+    setFormData((prev) => ({
+      ...prev,
+      [name]:
+        type === "checkbox"
+          ? checked
+          : value,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -29,12 +34,17 @@ const Login = () => {
     try {
       setLoading(true);
 
-      await login(formData);
+      await login({
+        email: formData.email,
+        password: formData.password,
+      });
 
       navigate("/dashboard");
     } catch (error) {
-      console.log(error);
-      alert("Invalid credentials");
+      alert(
+        error.response?.data?.message ||
+          "Invalid credentials"
+      );
     } finally {
       setLoading(false);
     }
@@ -46,7 +56,9 @@ const Login = () => {
 
         <div className="auth-header">
           <h1>NetGuard</h1>
-          <p>Network Anomaly Detection System</p>
+          <p>
+            Network Anomaly Detection System
+          </p>
         </div>
 
         <form onSubmit={handleSubmit}>
@@ -61,20 +73,44 @@ const Login = () => {
               value={formData.email}
               onChange={handleChange}
               required
+              disabled={loading}
             />
           </div>
 
           <div className="form-group">
             <label>Password</label>
 
-            <input
-              type="password"
-              name="password"
-              placeholder="Enter password"
-              value={formData.password}
-              onChange={handleChange}
-              required
-            />
+            <div className="password-input">
+              <input
+                type={
+                  showPassword
+                    ? "text"
+                    : "password"
+                }
+                name="password"
+                placeholder="Enter password"
+                value={formData.password}
+                onChange={handleChange}
+                required
+                disabled={loading}
+              />
+
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() =>
+                  setShowPassword(
+                    !showPassword
+                  )
+                }
+              >
+                {showPassword ? (
+                  <FaEyeSlash />
+                ) : (
+                  <FaEye />
+                )}
+              </button>
+            </div>
           </div>
 
           <div className="auth-options">
@@ -82,7 +118,9 @@ const Login = () => {
               <input
                 type="checkbox"
                 name="rememberMe"
-                checked={formData.rememberMe}
+                checked={
+                  formData.rememberMe
+                }
                 onChange={handleChange}
               />
               Remember Me
@@ -98,7 +136,9 @@ const Login = () => {
             className="auth-btn"
             disabled={loading}
           >
-            {loading ? "Signing In..." : "Login"}
+            {loading
+              ? "Signing In..."
+              : "Login"}
           </button>
 
         </form>

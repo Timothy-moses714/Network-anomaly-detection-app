@@ -20,15 +20,17 @@ import {
 
 dotenv.config();
 
+// =========================
 // Connect Database
+// =========================
+
 connectDB();
 
 const app = express();
-
 const server = http.createServer(app);
 
 // =========================
-// CORS Configuration
+// Allowed Origins
 // =========================
 
 const allowedOrigins = [
@@ -36,12 +38,42 @@ const allowedOrigins = [
   process.env.FRONTEND_URL,
 ].filter(Boolean);
 
+// =========================
+// CORS
+// =========================
+
 app.use(
   cors({
-    origin: allowedOrigins,
+    origin(origin, callback) {
+      // Allow Postman, curl and server-to-server requests
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(
+        new Error("Not allowed by CORS")
+      );
+    },
     credentials: true,
+    methods: [
+      "GET",
+      "POST",
+      "PUT",
+      "PATCH",
+      "DELETE",
+      "OPTIONS",
+    ],
+    allowedHeaders: [
+      "Content-Type",
+      "Authorization",
+    ],
   })
 );
+
+// Handle preflight requests
+app.options("*", cors());
 
 // =========================
 // Socket.IO
@@ -50,7 +82,10 @@ app.use(
 const io = new Server(server, {
   cors: {
     origin: allowedOrigins,
-    methods: ["GET", "POST"],
+    methods: [
+      "GET",
+      "POST",
+    ],
     credentials: true,
   },
 });
@@ -106,7 +141,7 @@ app.use(notFound);
 app.use(errorHandler);
 
 // =========================
-// Socket Events
+// Socket.IO Events
 // =========================
 
 io.on("connection", (socket) => {
@@ -122,7 +157,7 @@ io.on("connection", (socket) => {
 });
 
 // =========================
-// Server
+// Start Server
 // =========================
 
 const PORT =
@@ -130,6 +165,6 @@ const PORT =
 
 server.listen(PORT, () => {
   console.log(
-    ` Server running on port ${PORT}`
+    `Server running on port ${PORT}`
   );
 });
