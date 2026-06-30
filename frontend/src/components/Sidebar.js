@@ -30,42 +30,42 @@ const Sidebar = () => {
     },
     {
       name: "Monitoring",
-      path: "/monitoring",
+      path: "/dashboard/monitoring",
       icon: <FaNetworkWired />,
     },
     {
       name: "Alerts",
-      path: "/alerts",
+      path: "/dashboard/alerts",
       icon: <FaBell />,
     },
     {
       name: "Users",
-      path: "/users",
+      path: "/dashboard/users",
       icon: <FaUsers />,
     },
     {
       name: "Reports",
-      path: "/reports",
+      path: "/dashboard/reports",
       icon: <FaFileAlt />,
     },
     {
       name: "Settings",
-      path: "/settings",
+      path: "/dashboard/settings",
       icon: <FaCog />,
     },
     {
       name: "Analytics",
-      path: "/analytics",
+      path: "/dashboard/analytics",
       icon: <FaChartLine />,
     },
     {
       name: "Threat Map",
-      path: "/threat-map",
+      path: "/dashboard/threat-map",
       icon: <FaGlobe />,
     },
     {
-      name: " Predictions",
-      path: "/predictions",
+      name: "Predictions",
+      path: "/dashboard/predictions",
       icon: <FaBrain />,
     }
   ];

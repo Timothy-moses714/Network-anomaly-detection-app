@@ -164,10 +164,13 @@
 }
 
 .sidebar {
-  width: 220px;
-  background: #111;
+  width: 260px;
+  background: #0f172a;
   color: white;
   padding: 20px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 .sidebar a {
@@ -190,16 +193,6 @@
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
-}
-
-.sidebar {
-  width: 260px;
-  background: #0f172a;
-  color: white;
-  padding: 20px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 }
 
 .logo {
@@ -227,6 +220,10 @@
 
 .nav-link:hover {
   background: #1e293b;
+}
+
+.nav-link.active {
+  background: #2563eb;
 }
 
 .main-content {
@@ -288,6 +285,12 @@
 
 .stat-icon {
   font-size: 28px;
+}
+
+.dashboard-home {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
 .dashboard-grid {

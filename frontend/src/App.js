@@ -4,7 +4,7 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 
-import DashboardLayout from "./layout/DashboardLayout";
+import DashboardLayout from "./layouts/DashboardLayout";
 import ProtectedRoute from "./components/ProtectedRoute";
 
 import Dashboard from "./pages/dashboard/Dashboard";
